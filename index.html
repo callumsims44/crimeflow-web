@@ -1,465 +1,364 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Crimeflow — Coming Soon</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crimeflow — coming soon</title>
+<meta name="description" content="Crimeflow. Connected intelligence for England &amp; Wales. Coming 2026 — register for early access.">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --navy:#0D1F4C;--navy-m:#1A3A7A;--accent:#4A7FD4;--accent-l:#6FA3F0;
-  --white:#fff;--muted:rgba(255,255,255,.45);--border:rgba(255,255,255,.08);
+  --navy:#0D2140; --navy-deep:#081428; --royal:#1A4A8A; --teal:#3A8FA8;
+  --lteal:#5BB5C8; --off:#F4F7FA; --alert:#E5312A;
+  --grad:linear-gradient(135deg,#0D2140 0%,#3A8FA8 100%);
+  --line:rgba(91,181,200,.16); --line2:rgba(91,181,200,.28);
+  --ink:#F4F7FA; --muted:#9db2ce; --muted2:#6f87a8;
+  --sans:Calibri,"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:Consolas,"SF Mono",ui-monospace,"Roboto Mono",Menlo,monospace;
+  --s4:16px;--s6:24px;--s10:40px;--s16:64px;
 }
-html,body{height:100%;font-family:'Inter',sans-serif;background:var(--navy);color:var(--white);overflow-x:hidden;}
-
-/* ── MAP CANVAS ── */
-#map-canvas{position:fixed;inset:0;z-index:0;opacity:.35;}
-
-/* ── GRADIENT OVERLAY ── */
-.overlay{
-  position:fixed;inset:0;z-index:1;
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:var(--sans); color:var(--ink); background:var(--navy);
+  -webkit-font-smoothing:antialiased; line-height:1.5;
+  min-height:100vh; overflow-x:hidden;
+}
+body::before{ /* ambient depth */
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
   background:
-    radial-gradient(ellipse 70% 60% at 50% 40%, rgba(13,31,76,.15) 0%, rgba(13,31,76,.92) 60%, rgba(13,31,76,1) 100%);
+    radial-gradient(1100px 700px at 78% -8%, rgba(58,143,168,.20), transparent 60%),
+    radial-gradient(900px 600px at 8% 108%, rgba(26,74,138,.22), transparent 60%),
+    var(--navy);
 }
+.wrap{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 var(--s6)}
 
-/* ── GRID ── */
-.grid-bg{
-  position:fixed;inset:0;z-index:1;pointer-events:none;
-  background-image:linear-gradient(rgba(74,127,212,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(74,127,212,.04) 1px,transparent 1px);
-  background-size:52px 52px;
-}
+/* ---- nav ---- */
+nav{display:flex; align-items:center; justify-content:space-between;
+  padding:var(--s6) var(--s6); max-width:1180px; margin:0 auto; position:relative; z-index:2}
+.wordmark{font-size:22px;font-weight:700;color:#fff;letter-spacing:-.01em;line-height:1}
+.pill{display:inline-flex; align-items:center; gap:8px; font-size:12px; letter-spacing:.14em;
+  text-transform:uppercase; font-weight:700; color:var(--lteal);
+  border:1px solid var(--line2); border-radius:999px; padding:7px 14px; background:rgba(91,181,200,.05)}
+.pill .live{width:7px;height:7px;border-radius:50%;background:var(--lteal);box-shadow:0 0 0 0 rgba(91,181,200,.7);animation:beat 2.4s infinite}
+@keyframes beat{0%{box-shadow:0 0 0 0 rgba(91,181,200,.55)}70%{box-shadow:0 0 0 7px rgba(91,181,200,0)}100%{box-shadow:0 0 0 0 rgba(91,181,200,0)}}
 
-/* ── SCAN LINE ── */
-.scanline{
-  position:fixed;left:0;right:0;height:2px;z-index:2;
-  background:linear-gradient(90deg,transparent,rgba(74,127,212,.3),transparent);
-  animation:scan 6s linear infinite;pointer-events:none;
-}
-@keyframes scan{0%{top:-2px;opacity:0;}5%{opacity:1;}95%{opacity:.5;}100%{top:100vh;opacity:0;}}
+/* ---- hero ---- */
+.hero{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.08fr); gap:var(--s16);
+  align-items:center; padding:var(--s10) 0 var(--s16)}
+.eyebrow{display:inline-flex; align-items:center; gap:10px; font-size:12.5px; font-weight:700;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--lteal); margin-bottom:var(--s6)}
+.eyebrow .gd{width:26px;height:2px;background:var(--grad);border-radius:2px}
+h1{font-family:var(--sans); font-weight:700; font-size:clamp(42px,7vw,76px); line-height:1.02;
+  letter-spacing:-.02em; margin:0 0 var(--s6); color:#fff}
+h1 .accent{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  background-size:200% 100%; }
+.lede{font-size:clamp(16px,2vw,19px); color:var(--muted); max-width:34ch; margin:0 0 var(--s10)}
 
-/* ── CONTENT ── */
-.page{
-  position:relative;z-index:10;min-height:100vh;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:40px 24px;text-align:center;
-}
+/* ---- form ---- */
+form{display:flex; gap:10px; max-width:440px; flex-wrap:wrap}
+.field{flex:1 1 220px; display:flex; align-items:center; background:rgba(244,247,250,.04);
+  border:1px solid var(--line2); border-radius:12px; padding:0 14px; transition:border-color .18s,background .18s}
+.field:focus-within{border-color:var(--lteal); background:rgba(91,181,200,.07)}
+.field input{flex:1; background:none; border:0; outline:none; color:var(--off); font-family:var(--sans);
+  font-size:16px; padding:14px 0}
+.field input::placeholder{color:var(--muted2)}
+button.cta{border:0; cursor:pointer; color:#fff; font-family:var(--sans); font-weight:700; font-size:16px;
+  padding:14px 22px; border-radius:12px; background:var(--grad); background-size:180% 100%;
+  transition:transform .16s ease, box-shadow .2s, background-position .4s; white-space:nowrap;
+  box-shadow:0 8px 22px -10px rgba(58,143,168,.7)}
+button.cta:hover{transform:translateY(-1px); background-position:100% 0; box-shadow:0 12px 26px -10px rgba(58,143,168,.85)}
+button.cta:active{transform:translateY(0)}
+.hint{font-size:13px; color:var(--muted2); margin-top:12px}
+.msg{margin-top:14px; font-size:14.5px; min-height:20px; font-weight:600}
+.msg.ok{color:var(--lteal)} .msg.err{color:var(--alert)}
+.confirm{display:none; align-items:center; gap:10px; max-width:440px; padding:16px 18px;
+  border:1px solid var(--line2); border-radius:12px; background:rgba(91,181,200,.06); color:var(--off)}
+.confirm.show{display:flex}
+.confirm .tick{width:22px;height:22px;flex:0 0 22px;border-radius:50%;background:var(--grad);
+  display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700}
 
-/* ── LOGO AREA ── */
-.logo-wrap{position:relative;width:130px;height:130px;margin:0 auto 28px;display:flex;align-items:center;justify-content:center;}
-.logo-ring{
-  position:absolute;border-radius:50%;border:1px solid rgba(74,127,212,.25);
-  animation:ring-pulse 3s ease-in-out infinite;
-}
-.logo-ring:nth-child(1){width:130px;height:130px;animation-delay:0s;}
-.logo-ring:nth-child(2){width:100px;height:100px;animation-delay:.4s;border-color:rgba(74,127,212,.18);}
-.logo-ring:nth-child(3){width:70px;height:70px;animation-delay:.8s;border-color:rgba(74,127,212,.12);}
-@keyframes ring-pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.06);opacity:.6;}}
-.logo-img{position:relative;z-index:2;width:90px;height:90px;object-fit:contain;filter:drop-shadow(0 0 30px rgba(74,127,212,.6));}
+/* ---- map ---- */
+.mapcard{position:relative; border:1px solid var(--line2); border-radius:20px; padding:18px;
+  background:linear-gradient(180deg, rgba(13,33,64,.6), rgba(8,20,40,.75));
+  box-shadow:0 30px 80px -40px rgba(0,0,0,.7); overflow:hidden}
+.mapcard::before{content:"";position:absolute;inset:0;border-radius:20px;pointer-events:none;
+  background:radial-gradient(120% 80% at 80% 0,rgba(58,143,168,.14),transparent 55%)}
+.maphead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;position:relative;z-index:2}
+.maphead .t{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.maphead .coord{font-family:var(--mono);font-size:11.5px;color:var(--muted2)}
+.mapstage{position:relative; display:flex; justify-content:center}
+svg.uk{display:block; width:auto; height:clamp(360px,52vh,540px); max-width:100%; position:relative; z-index:1}
+.land{fill:rgba(26,74,138,.14); stroke:url(#coast); stroke-width:1.3;}
+.grat{stroke:rgba(91,181,200,.07); stroke-width:.6; fill:none}
+.link{stroke:url(#linkg); stroke-width:1.4; fill:none; stroke-linecap:round}
+.nd .dot{fill:#33507e}
+.nd .halo{fill:rgba(91,181,200,0)}
+.nd .ping{fill:none;stroke:var(--lteal);stroke-width:1.4;opacity:0}
+.nd.act .dot{fill:var(--lteal); filter:drop-shadow(0 0 5px rgba(91,181,200,.9))}
+.nd.act .halo{fill:radial-gradient(circle,rgba(91,181,200,.5),transparent)}
+.nd.act .ping{animation:ping 3.4s var(--d,0s) infinite ease-out}
+.nd.act{cursor:pointer}
+.nd.act:hover .dot,.nd.act:focus .dot{fill:#eaf6ff}
+.nd.act:focus{outline:none}
+.nd.act:focus .ring2{opacity:1}
+@keyframes ping{0%{r:3.4;opacity:.9}70%{r:15;opacity:0}100%{opacity:0}}
+.sweep{position:absolute; left:0; right:0; height:120px; z-index:0; pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(91,181,200,.12),transparent);
+  animation:sweep 6.5s linear infinite}
+@keyframes sweep{0%{top:-120px}100%{top:100%}}
 
-/* ── BADGE ── */
-.badge{
-  display:inline-flex;align-items:center;gap:8px;
-  background:rgba(74,127,212,.1);border:1px solid rgba(74,127,212,.28);
-  border-radius:100px;padding:5px 16px;
-  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--accent-l);margin-bottom:20px;
-}
-.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-l);animation:pulse 2s ease-in-out infinite;}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(111,163,240,.5);}50%{box-shadow:0 0 0 6px rgba(111,163,240,0);}}
+/* tooltip */
+.tip{position:absolute; z-index:5; pointer-events:none; transform:translate(-50%,calc(-100% - 12px));
+  background:#0b1c38; border:1px solid var(--line2); border-radius:10px; padding:9px 11px; min-width:150px;
+  box-shadow:0 16px 40px -18px rgba(0,0,0,.8); opacity:0; transition:opacity .12s; }
+.tip.show{opacity:1}
+.tip .rn{font-size:13.5px;font-weight:700;color:#fff;margin-bottom:5px}
+.tip .rf{font-family:var(--mono);font-size:11.5px;color:var(--lteal);margin-bottom:7px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px}
+.chip.open{background:#EAF6EF;color:#1A7A3F}
+.chip.rep{background:#E6F1FB;color:#185FA5}
+.chip.clo{background:#FAEAEA;color:#A32D2D}
+.chip .cd{width:6px;height:6px;border-radius:50%;background:currentColor}
 
-/* ── WORDMARK ── */
-.wordmark{
-  font-size:clamp(52px,9vw,84px);font-weight:900;letter-spacing:-.04em;line-height:1;
-  margin-bottom:14px;
-  background:linear-gradient(135deg,#fff 0%,#c4d9f8 60%,#6FA3F0 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.tagline{
-  font-size:clamp(15px,2.2vw,19px);font-weight:400;color:var(--muted);
-  max-width:460px;line-height:1.65;margin-bottom:40px;
-}
-.tagline strong{color:rgba(255,255,255,.8);font-weight:600;}
+/* counters */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;position:relative;z-index:2}
+.stat{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(91,181,200,.03)}
+.stat .v{font-family:var(--mono);font-size:22px;font-weight:600;color:#fff;letter-spacing:-.5px}
+.stat .l{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);font-weight:700;margin-top:3px}
 
-/* ── EMAIL FORM ── */
-.form-wrap{
-  display:flex;gap:0;width:100%;max-width:420px;margin-bottom:12px;
-  border-radius:12px;overflow:hidden;
-  border:1px solid rgba(74,127,212,.35);
-  background:rgba(255,255,255,.05);backdrop-filter:blur(10px);
-}
-.form-wrap input{
-  flex:1;background:transparent;border:none;outline:none;
-  padding:14px 18px;font-size:14px;font-family:'Inter',sans-serif;color:#fff;
-}
-.form-wrap input::placeholder{color:var(--muted);}
-.form-wrap button{
-  background:var(--accent);border:none;padding:14px 22px;
-  font-size:13px;font-weight:700;font-family:'Inter',sans-serif;
-  color:#fff;cursor:pointer;white-space:nowrap;transition:background .15s;
-}
-.form-wrap button:hover{background:var(--accent-l);}
-.form-note{font-size:11px;color:rgba(255,255,255,.25);margin-bottom:44px;letter-spacing:.01em;}
+/* ticker */
+.feed{position:relative; z-index:1; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  padding:14px 0; margin:var(--s10) 0 0; overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.feedlabel{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);font-weight:700;
+  padding:0 var(--s6) 10px}
+.track{display:flex;gap:34px;white-space:nowrap;width:max-content;animation:scroll 42s linear infinite}
+.feed:hover .track{animation-play-state:paused}
+.item{display:inline-flex;align-items:center;gap:12px;font-size:13.5px;color:var(--muted)}
+.item .code{font-family:var(--mono);font-size:12.5px;color:var(--lteal)}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* ── CONFIRM / ERROR ── */
-.msg{
-  display:none;align-items:center;gap:10px;
-  border-radius:12px;padding:13px 20px;
-  font-size:13px;font-weight:600;
-  width:100%;max-width:420px;margin-bottom:12px;
+/* footer */
+footer{position:relative;z-index:1;border-top:1px solid var(--line);margin-top:var(--s16);
+  padding:var(--s10) 0 var(--s16)}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.foot .brand{display:flex;align-items:center;gap:12px}
+.foot .brand img{height:26px;width:26px}
+.foot .brand b{font-size:18px;color:#fff;letter-spacing:-.01em}
+.foot a{color:var(--lteal);text-decoration:none}
+.foot a:hover{text-decoration:underline}
+.foot .meta{font-size:12.5px;color:var(--muted2);text-align:right}
+.foot .meta .mono{font-family:var(--mono)}
+
+@media (max-width:880px){
+  .hero{grid-template-columns:1fr; gap:var(--s10); padding:var(--s6) 0 var(--s10)}
+  .mapcard{order:2}
+  .stats{grid-template-columns:repeat(3,1fr)}
 }
-.msg.ok{background:rgba(26,110,60,.18);border:1px solid rgba(26,110,60,.35);color:#6ee09e;}
-.msg.err{background:rgba(208,49,45,.15);border:1px solid rgba(208,49,45,.3);color:#f4a0a0;}
-
-/* ── PILLS ── */
-.pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:560px;margin-bottom:52px;}
-.pill{
-  background:rgba(255,255,255,.04);border:1px solid var(--border);
-  border-radius:100px;padding:5px 13px;
-  font-size:12px;font-weight:500;color:rgba(255,255,255,.5);
-  display:flex;align-items:center;gap:6px;
+@media (max-width:520px){
+  .wrap{padding:0 18px} nav{padding:18px}
+  h1{font-size:clamp(38px,12vw,52px)}
+  .stat .v{font-size:19px}
+  .foot{flex-direction:column;align-items:flex-start} .foot .meta{text-align:left}
+  svg.uk{height:clamp(320px,46vh,440px)}
 }
-
-/* ── FOOTER ── */
-.footer{font-size:11px;color:rgba(255,255,255,.18);letter-spacing:.02em;}
-
-/* ── ALERT TICKER (map legend) ── */
-.ticker{
-  position:fixed;bottom:0;left:0;right:0;z-index:20;
-  background:rgba(13,31,76,.85);backdrop-filter:blur(8px);
-  border-top:1px solid rgba(74,127,212,.15);
-  padding:10px 0;overflow:hidden;
-}
-.ticker-inner{
-  display:flex;gap:48px;white-space:nowrap;
-  animation:ticker 28s linear infinite;
-}
-.ticker-item{font-size:11px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:8px;}
-.ticker-dot{width:5px;height:5px;border-radius:50%;background:var(--accent-l);flex-shrink:0;}
-
-@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
-
-@media(max-width:480px){
-  .form-wrap{flex-direction:column;}
-  .form-wrap button{border-radius:0 0 11px 11px;padding:12px;}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important; transition:none !important}
+  .track{width:100%;flex-wrap:wrap;white-space:normal;justify-content:center}
+  .sweep{display:none}
 }
 </style>
 </head>
 <body>
+<nav>
+  <span class="wordmark">Crimeflow</span>
+  <span class="pill"><span class="live"></span>Coming soon</span>
+</nav>
 
-<!-- UK Map -->
-<canvas id="map-canvas"></canvas>
-<div class="overlay"></div>
-<div class="grid-bg"></div>
-<div class="scanline"></div>
+<div class="wrap">
+  <section class="hero">
+    <div class="intro">
+      <span class="eyebrow"><span class="gd"></span>Coming 2026 · England &amp; Wales</span>
+      <h1>Intelligence,<br><span class="accent">connected.</span></h1>
+      <p class="lede">One secure platform, bringing the picture together across England &amp; Wales. Register your interest for early access.</p>
 
-<!-- Main content -->
-<main class="page">
+      <form id="f" novalidate>
+        <label class="field" for="email">
+          <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.co.uk" aria-label="Work email">
+        </label>
+        <button class="cta" type="submit">Request access</button>
+      </form>
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+      <div class="confirm" id="confirm"><span class="tick">✓</span><span>You're on the list. We'll be in touch before launch.</span></div>
+      <p class="hint">Early-access invites only. No spam, ever.</p>
+    </div>
 
-  <div class="logo-wrap">
-    <div class="logo-ring"></div>
-    <div class="logo-ring"></div>
-    <div class="logo-ring"></div>
-    <img class="logo-img" src="data:image/png;base64,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" alt="Crimeflow">
+    <div class="mapcard">
+      <div class="maphead">
+        <span class="t">Network map</span>
+        <span class="coord" id="clock">52.4862° N · 1.8904° W</span>
+      </div>
+      <div class="mapstage" id="stage">
+        <div class="sweep"></div>
+        <svg class="uk" viewBox="0 0 440 810" xmlns="http://www.w3.org/2000/svg" aria-label="Interactive map of England, Wales and Great Britain">
+          <defs>
+            <linearGradient id="coast" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#3A8FA8"/><stop offset="1" stop-color="#5BB5C8"/>
+            </linearGradient>
+            <linearGradient id="linkg" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#1A4A8A"/><stop offset="1" stop-color="#5BB5C8"/>
+            </linearGradient>
+          </defs>
+          <path class="land" d="M 172.8 14.0 C 165.0 28.0 114.9 81.0 125.9 98.0 C 136.9 115.1 226.2 97.4 238.9 116.3 C 251.6 135.2 209.4 189.4 202.1 211.3 C 194.9 233.2 189.1 235.0 195.2 247.8 C 201.3 260.6 228.6 272.0 238.9 288.0 C 249.2 304.0 246.7 326.5 257.0 343.7 C 267.3 360.9 288.7 377.4 300.7 391.2 C 312.8 405.1 323.0 414.5 329.5 426.8 C 336.1 439.2 336.8 449.7 340.2 465.2 C 343.6 480.7 346.9 508.4 349.8 520.0 C 352.6 531.6 353.2 533.1 357.2 534.6 C 361.2 536.1 362.3 524.6 373.8 529.1 C 385.2 533.7 418.3 548.6 426.0 562.0 C 433.7 575.4 424.1 597.3 420.1 609.5 C 416.1 621.7 404.0 625.0 402.0 635.1 C 400.1 645.1 407.9 659.3 408.4 669.8 C 408.9 680.3 415.0 689.9 405.2 698.1 C 395.4 706.3 362.6 713.9 349.8 719.1 C 337.0 724.3 340.7 726.7 328.5 729.2 C 316.2 731.6 292.4 731.9 276.2 733.7 C 260.1 735.6 243.7 738.0 231.5 740.1 C 219.2 742.3 213.2 747.1 202.7 746.5 C 192.2 745.9 178.1 737.7 168.6 736.5 C 159.1 735.3 154.9 733.7 145.6 739.2 C 136.4 744.7 124.3 762.4 113.1 769.4 C 101.9 776.4 87.9 776.8 78.5 781.2 C 69.1 785.6 64.9 793.6 56.6 795.8 C 48.4 798.1 20.1 809.5 28.9 794.9 C 37.7 780.3 95.0 725.5 109.4 708.2 C 123.8 690.8 104.7 696.3 115.3 690.8 C 125.8 685.3 171.8 681.5 172.8 675.3 C 173.9 669.0 135.9 657.6 121.7 653.4 C 107.5 649.1 97.5 651.5 87.6 649.7 C 77.6 647.9 62.3 649.2 62.0 642.4 C 61.6 635.5 76.2 620.9 85.4 608.6 C 94.7 596.3 115.8 580.4 117.4 568.4 C 119.0 556.4 100.0 547.6 95.0 536.4 C 90.0 525.3 76.0 509.7 87.6 501.7 C 99.1 493.8 149.9 490.0 164.3 489.0 C 178.7 487.9 172.7 500.8 173.9 495.3 C 175.1 489.9 173.2 467.3 171.2 456.1 C 169.3 444.8 166.9 441.0 162.2 427.8 C 157.5 414.5 145.9 388.9 143.0 376.6 C 140.1 364.3 156.8 357.0 144.6 353.8 C 132.4 350.6 84.3 358.9 70.0 357.4 C 55.7 355.9 58.3 356.2 58.8 344.6 C 59.2 333.1 70.1 301.7 72.6 288.0 C 75.1 274.3 75.5 269.0 73.7 262.4 C 71.9 255.9 63.9 259.4 62.0 248.7 C 60.0 238.1 70.0 208.1 62.0 198.5 C 54.0 188.9 20.2 198.8 14.0 191.2 C 7.8 183.6 23.1 166.1 24.7 152.8 C 26.3 139.6 17.4 127.0 23.6 111.7 C 29.8 96.5 52.2 76.1 62.0 61.5 C 71.7 46.9 63.7 32.0 82.2 24.0 C 100.7 16.1 157.7 15.7 172.8 14.0 C 187.9 12.3 180.6 -0.0 172.8 14.0 Z"/>
+          <g id="links"></g>
+          <g id="nodes">
+<g class="nd act" data-name="London" data-i="0" style="--d:0.00s" tabindex=0 role=button aria-label="London"><circle class="halo" cx="327.0" cy="663.7" r="9"/><circle class="dot" cx="327.0" cy="663.7" r="3.4"/><circle class="ping" cx="327.0" cy="663.7" r="3.4"/></g>
+<g class="nd act" data-name="Birmingham" data-i="1" style="--d:0.35s" tabindex=0 role=button aria-label="Birmingham"><circle class="halo" cx="233.1" cy="574.3" r="9"/><circle class="dot" cx="233.1" cy="574.3" r="3.4"/><circle class="ping" cx="233.1" cy="574.3" r="3.4"/></g>
+<g class="nd act" data-name="Manchester" data-i="2" style="--d:0.70s" tabindex=0 role=button aria-label="Manchester"><circle class="halo" cx="214.3" cy="483.5" r="9"/><circle class="dot" cx="214.3" cy="483.5" r="3.4"/><circle class="ping" cx="214.3" cy="483.5" r="3.4"/></g>
+<g class="nd act" data-name="Leeds" data-i="3" style="--d:1.05s" tabindex=0 role=button aria-label="Leeds"><circle class="halo" cx="251.2" cy="454.2" r="9"/><circle class="dot" cx="251.2" cy="454.2" r="3.4"/><circle class="ping" cx="251.2" cy="454.2" r="3.4"/></g>
+<g class="nd act" data-name="Liverpool" data-i="4" style="--d:1.40s" tabindex=0 role=button aria-label="Liverpool"><circle class="halo" cx="175.1" cy="489.9" r="9"/><circle class="dot" cx="175.1" cy="489.9" r="3.4"/><circle class="ping" cx="175.1" cy="489.9" r="3.4"/></g>
+<g class="nd act" data-name="Newcastle" data-i="5" style="--d:1.75s" tabindex=0 role=button aria-label="Newcastle"><circle class="halo" cx="247.6" cy="346.6" r="9"/><circle class="dot" cx="247.6" cy="346.6" r="3.4"/><circle class="ping" cx="247.6" cy="346.6" r="3.4"/></g>
+<g class="nd act" data-name="Bristol" data-i="6" style="--d:2.10s" tabindex=0 role=button aria-label="Bristol"><circle class="halo" cx="195.9" cy="668.5" r="9"/><circle class="dot" cx="195.9" cy="668.5" r="3.4"/><circle class="ping" cx="195.9" cy="668.5" r="3.4"/></g>
+<g class="nd act" data-name="Sheffield" data-i="7" style="--d:2.45s" tabindex=0 role=button aria-label="Sheffield"><circle class="halo" cx="255.7" cy="492.3" r="9"/><circle class="dot" cx="255.7" cy="492.3" r="3.4"/><circle class="ping" cx="255.7" cy="492.3" r="3.4"/></g>
+<g class="nd act" data-name="Nottingham" data-i="8" style="--d:2.80s" tabindex=0 role=button aria-label="Nottingham"><circle class="halo" cx="272.1" cy="531.5" r="9"/><circle class="dot" cx="272.1" cy="531.5" r="3.4"/><circle class="ping" cx="272.1" cy="531.5" r="3.4"/></g>
+<g class="nd act" data-name="Southampton" data-i="9" style="--d:0.00s" tabindex=0 role=button aria-label="Southampton"><circle class="halo" cx="259.0" cy="718.3" r="9"/><circle class="dot" cx="259.0" cy="718.3" r="3.4"/><circle class="ping" cx="259.0" cy="718.3" r="3.4"/></g>
+<g class="nd act" data-name="Cardiff" data-i="10" style="--d:0.35s" tabindex=0 role=button aria-label="Cardiff"><circle class="halo" cx="164.4" cy="666.1" r="9"/><circle class="dot" cx="164.4" cy="666.1" r="3.4"/><circle class="ping" cx="164.4" cy="666.1" r="3.4"/></g>
+<g class="nd act" data-name="Norwich" data-i="11" style="--d:0.70s" tabindex=0 role=button aria-label="Norwich"><circle class="halo" cx="402.9" cy="561.1" r="9"/><circle class="dot" cx="402.9" cy="561.1" r="3.4"/><circle class="ping" cx="402.9" cy="561.1" r="3.4"/></g>
+<g class="nd act" data-name="Plymouth" data-i="12" style="--d:1.05s" tabindex=0 role=button aria-label="Plymouth"><circle class="halo" cx="113.0" cy="767.0" r="9"/><circle class="dot" cx="113.0" cy="767.0" r="3.4"/><circle class="ping" cx="113.0" cy="767.0" r="3.4"/></g>
+<g class="nd act" data-name="Leicester" data-i="13" style="--d:1.40s" tabindex=0 role=button aria-label="Leicester"><circle class="halo" cx="273.1" cy="560.6" r="9"/><circle class="dot" cx="273.1" cy="560.6" r="3.4"/><circle class="ping" cx="273.1" cy="560.6" r="3.4"/></g>
+<g class="nd act" data-name="Swansea" data-i="14" style="--d:1.75s" tabindex=0 role=button aria-label="Swansea"><circle class="halo" cx="123.6" cy="653.3" r="9"/><circle class="dot" cx="123.6" cy="653.3" r="3.4"/><circle class="ping" cx="123.6" cy="653.3" r="3.4"/></g>
+<g class="nd act" data-name="Brighton" data-i="15" style="--d:2.10s" tabindex=0 role=button aria-label="Brighton"><circle class="halo" cx="326.5" cy="726.2" r="9"/><circle class="dot" cx="326.5" cy="726.2" r="3.4"/><circle class="ping" cx="326.5" cy="726.2" r="3.4"/></g>
+<g class="nd act" data-name="Hull" data-i="16" style="--d:2.45s" tabindex=0 role=button aria-label="Hull"><circle class="halo" cx="315.9" cy="459.3" r="9"/><circle class="dot" cx="315.9" cy="459.3" r="3.4"/><circle class="ping" cx="315.9" cy="459.3" r="3.4"/></g>
+<g class="nd act" data-name="Exeter" data-i="17" style="--d:2.80s" tabindex=0 role=button aria-label="Exeter"><circle class="halo" cx="145.4" cy="735.7" r="9"/><circle class="dot" cx="145.4" cy="735.7" r="3.4"/><circle class="ping" cx="145.4" cy="735.7" r="3.4"/></g>
+<g class="nd dim" data-name="Edinburgh" data-i="18" style="--d:0.00s" ><circle class="halo" cx="163.9" cy="257.6" r="9"/><circle class="dot" cx="163.9" cy="257.6" r="3.4"/><circle class="ping" cx="163.9" cy="257.6" r="3.4"/></g>
+<g class="nd dim" data-name="Glasgow" data-i="19" style="--d:0.35s" ><circle class="halo" cx="107.2" cy="266.1" r="9"/><circle class="dot" cx="107.2" cy="266.1" r="3.4"/><circle class="ping" cx="107.2" cy="266.1" r="3.4"/></g>
+          </g>
+        </svg>
+        <div class="tip" id="tip"><div class="rn"></div><div class="rf"></div><span class="chip"></span></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="v" data-to="18" id="s1">0</div><div class="l">Nodes online</div></div>
+        <div class="stat"><div class="v" data-to="1240" id="s2">0</div><div class="l">Signals today</div></div>
+        <div class="stat"><div class="v" data-to="9" id="s3">0</div><div class="l">Regions</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="feed">
+    <div class="feedlabel">Live feed</div>
+    <div class="track" id="track"></div>
   </div>
 
-  <div class="badge"><div class="badge-dot"></div>Coming Soon</div>
-
-  <h1 class="wordmark">Crimeflow</h1>
-
-  <p class="tagline">
-    The UK's <strong>retail crime intelligence platform.</strong><br>
-    Record incidents, share intelligence, and protect your store — together.
-  </p>
-
-  <!-- Email form -->
-  <div class="form-wrap" id="form-wrap">
-    <input type="email" id="email-input" placeholder="Enter your work email for early access" />
-    <button onclick="handleSubmit()">Notify me</button>
-  </div>
-  <div class="msg ok" id="msg-ok">✓ &nbsp;You're on the list — we'll be in touch soon.</div>
-  <div class="msg err" id="msg-err">✗ &nbsp;<span id="err-text">Something went wrong, please try again.</span></div>
-  <p class="form-note">Early access for retail crime professionals in England &amp; Wales. No spam.</p>
-
-  <div class="pills">
-    <div class="pill">📋 Incident recording</div>
-    <div class="pill">🧠 Intelligence development</div>
-    <div class="pill">📡 Network alerts</div>
-    <div class="pill">📄 MG11 statements</div>
-    <div class="pill">🔒 Evidence packs</div>
-    <div class="pill">👤 Persons of interest</div>
-    <div class="pill">🏪 Multi-store management</div>
-    <div class="pill">⚖️ England &amp; Wales</div>
-  </div>
-
-  <div class="footer">&copy; 2026 Crimeflow &nbsp;·&nbsp; England &amp; Wales</div>
-
-</main>
-
-<!-- Alert ticker -->
-<div class="ticker">
-  <div class="ticker-inner" id="ticker-inner"></div>
+  <footer>
+    <div class="foot">
+      <div class="brand">
+        <b>Crimeflow</b>
+      </div>
+      <div class="meta">
+        <a href="https://crimeflow.co.uk">crimeflow.co.uk</a> · Confidential<br>
+        <span class="mono">© 2026 Crimeflow</span> · England &amp; Wales
+      </div>
+    </div>
+  </footer>
 </div>
 
 <script>
-// ── Supabase ──────────────────────────────────────────────────
-const SB_URL = 'https://dvsieosibutnxvmpjwyp.supabase.co';
-const SB_KEY = 'sb_publishable_6tauWBxLHQ-4z9nDM5IiAQ_dTeY4xCw';
-const { createClient } = supabase;
-const sb = createClient(SB_URL, SB_KEY);
+const NODES = [{"n": "London", "x": 327.0, "y": 663.7, "a": 1}, {"n": "Birmingham", "x": 233.1, "y": 574.3, "a": 1}, {"n": "Manchester", "x": 214.3, "y": 483.5, "a": 1}, {"n": "Leeds", "x": 251.2, "y": 454.2, "a": 1}, {"n": "Liverpool", "x": 175.1, "y": 489.9, "a": 1}, {"n": "Newcastle", "x": 247.6, "y": 346.6, "a": 1}, {"n": "Bristol", "x": 195.9, "y": 668.5, "a": 1}, {"n": "Sheffield", "x": 255.7, "y": 492.3, "a": 1}, {"n": "Nottingham", "x": 272.1, "y": 531.5, "a": 1}, {"n": "Southampton", "x": 259.0, "y": 718.3, "a": 1}, {"n": "Cardiff", "x": 164.4, "y": 666.1, "a": 1}, {"n": "Norwich", "x": 402.9, "y": 561.1, "a": 1}, {"n": "Plymouth", "x": 113.0, "y": 767.0, "a": 1}, {"n": "Leicester", "x": 273.1, "y": 560.6, "a": 1}, {"n": "Swansea", "x": 123.6, "y": 653.3, "a": 1}, {"n": "Brighton", "x": 326.5, "y": 726.2, "a": 1}, {"n": "Hull", "x": 315.9, "y": 459.3, "a": 1}, {"n": "Exeter", "x": 145.4, "y": 735.7, "a": 1}, {"n": "Edinburgh", "x": 163.9, "y": 257.6, "a": 0}, {"n": "Glasgow", "x": 107.2, "y": 266.1, "a": 0}];
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ── Email submit ──────────────────────────────────────────────
-async function handleSubmit() {
-  var email = document.getElementById('email-input').value.trim().toLowerCase();
-  var okEl = document.getElementById('msg-ok');
-  var errEl = document.getElementById('msg-err');
-  var errText = document.getElementById('err-text');
-  okEl.style.display = 'none'; errEl.style.display = 'none';
-  if (!email || !email.includes('@') || !email.includes('.')) {
-    errText.textContent = 'Please enter a valid email address.';
-    errEl.style.display = 'flex'; return;
-  }
-  var btn = document.querySelector('.form-wrap button');
-  btn.textContent = 'Saving...'; btn.disabled = true;
-  var { error } = await sb.from('waitlist').insert({ email: email, source: 'landing_page' });
-  btn.textContent = 'Notify me'; btn.disabled = false;
-  if (error) {
-    if (error.code === '23505') {
-      errText.textContent = 'That email is already on the list!';
-    } else {
-      errText.textContent = 'Something went wrong — please try again.';
-    }
-    errEl.style.display = 'flex'; return;
-  }
-  document.getElementById('form-wrap').style.display = 'none';
-  okEl.style.display = 'flex';
+/* ---- counters ---- */
+function countUp(el){
+  const to = +el.dataset.to; if(reduce){el.textContent=to.toLocaleString();return;}
+  const dur=1400, t0=performance.now();
+  function step(t){ let p=Math.min(1,(t-t0)/dur); p=1-Math.pow(1-p,3);
+    el.textContent=Math.round(to*p).toLocaleString();
+    if(p<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
 }
-document.getElementById('email-input').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') handleSubmit();
+['s1','s2','s3'].forEach(id=>countUp(document.getElementById(id)));
+
+/* signals ticker keeps climbing */
+if(!reduce){ const s2=document.getElementById('s2'); let n=1240;
+  setInterval(()=>{ n+=Math.floor(Math.random()*4)+1; s2.textContent=n.toLocaleString(); }, 2600); }
+
+/* ---- node tooltip ---- */
+const svg=document.querySelector('svg.uk'), stage=document.getElementById('stage'), tip=document.getElementById('tip');
+const statuses=[['open','Open'],['rep','Reported'],['clo','Closed']];
+function refFor(i){ return 'CF-2026-'+String(147+i*13%853).padStart(5,'0'); }
+function showTip(g){
+  const name=g.dataset.name, i=+g.dataset.i;
+  const st=statuses[i%3];
+  tip.querySelector('.rn').textContent=name;
+  tip.querySelector('.rf').textContent=refFor(i);
+  const chip=tip.querySelector('.chip'); chip.className='chip '+st[0];
+  chip.innerHTML='<span class="cd"></span>'+st[1];
+  const dot=g.querySelector('.dot');
+  const r=dot.getBoundingClientRect(), s=stage.getBoundingClientRect();
+  tip.style.left=(r.left-s.left+r.width/2)+'px';
+  tip.style.top=(r.top-s.top+r.height/2)+'px';
+  tip.classList.add('show');
+}
+function hideTip(){ tip.classList.remove('show'); }
+document.querySelectorAll('.nd.act').forEach(g=>{
+  g.addEventListener('mouseenter',()=>showTip(g));
+  g.addEventListener('mouseleave',hideTip);
+  g.addEventListener('focus',()=>showTip(g));
+  g.addEventListener('blur',hideTip);
+  g.addEventListener('click',()=>showTip(g));
 });
+stage.addEventListener('click',e=>{ if(!e.target.closest('.nd.act')) hideTip(); });
 
-// ── Ticker ────────────────────────────────────────────────────
-var alerts = [
-  'Network Alert — Ringwood: Repeat offender, IC1 male, dark jacket targeting spirits',
-  'Network Alert — Bournemouth: ORC group active, 3 suspects, blue holdall',
-  'Intelligence — Southampton: Suspect charged following Op Checkout evidence pack',
-  'Network Alert — Poole: Till distraction team operating in BH15 area',
-  'Intelligence — Winchester: CCTV confirmed ID, MG11 submitted to CPS',
-  'Network Alert — Salisbury: Female suspect, concealment in pram, SP1 area',
-  'Intelligence — Christchurch: Conviction secured — 6 months suspended',
-  'Network Alert — Dorchester: High-value spirits theft, estimated £340 loss',
-  'Network Alert — Eastleigh: Known offender released on bail — stores alerted',
-  'Intelligence — New Forest: Cross-store intelligence led to arrest this morning',
-];
-var t = document.getElementById('ticker-inner');
-var html = alerts.map(function(a){
-  return '<div class="ticker-item"><div class="ticker-dot"></div>' + a + '</div>';
-}).join('');
-// Duplicate for seamless loop
-t.innerHTML = html + html;
-
-// ── UK Map ────────────────────────────────────────────────────
-var canvas = document.getElementById('map-canvas');
-var ctx = canvas.getContext('2d');
-
-function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+/* ---- intelligence links ---- */
+const act = NODES.map((n,i)=>({...n,i})).filter(n=>n.a);
+const linksG=document.getElementById('links');
+function drawLink(){
+  if(reduce||act.length<2)return;
+  const a=act[Math.random()*act.length|0]; let b=act[Math.random()*act.length|0];
+  let guard=0; while(b===a && guard++<6) b=act[Math.random()*act.length|0];
+  const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+  ln.setAttribute('class','link');
+  ln.setAttribute('x1',a.x);ln.setAttribute('y1',a.y);
+  ln.setAttribute('x2',a.x);ln.setAttribute('y2',a.y);
+  linksG.appendChild(ln);
+  const len=Math.hypot(b.x-a.x,b.y-a.y);
+  ln.animate([{},{}],{duration:1}); // noop to ensure layout
+  // draw in
+  const t0=performance.now(), dur=900;
+  function step(t){ let p=Math.min(1,(t-t0)/dur); const e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+    ln.setAttribute('x2',a.x+(b.x-a.x)*e); ln.setAttribute('y2',a.y+(b.y-a.y)*e);
+    ln.style.opacity=(p<.85?0.85:0.85*(1-(p-.85)/.15));
+    if(p<1)requestAnimationFrame(step); else { ln.style.transition='opacity .6s'; ln.style.opacity=0; setTimeout(()=>ln.remove(),700);} }
+  requestAnimationFrame(step);
 }
-resize();
-window.addEventListener('resize', resize);
+if(!reduce) setInterval(drawLink, 1800);
 
-// Simplified UK outline path points (scaled to canvas)
-// Normalised coordinates [x, y] as fraction of canvas
-var UK_POINTS = [
-  // England/Wales west coast north→south
-  [.42,.18],[.40,.22],[.38,.25],[.36,.27],[.34,.28],[.33,.30],[.34,.33],
-  [.33,.36],[.32,.38],[.31,.40],[.30,.43],[.30,.46],[.31,.48],[.32,.50],
-  [.33,.52],[.34,.55],[.33,.57],[.32,.60],[.33,.62],[.34,.65],[.35,.67],
-  [.36,.69],[.36,.71],[.37,.73],[.38,.74],[.39,.75],[.40,.76],
-  // South coast
-  [.42,.77],[.44,.78],[.46,.78],[.48,.78],[.50,.79],[.52,.78],[.54,.78],
-  [.56,.77],[.58,.76],[.59,.75],[.60,.73],
-  // East coast south→north
-  [.61,.71],[.62,.68],[.62,.65],[.62,.62],[.63,.58],[.63,.55],
-  [.62,.52],[.62,.48],[.61,.44],[.61,.40],[.60,.37],[.60,.34],
-  [.59,.30],[.58,.27],[.57,.24],[.56,.22],[.55,.20],[.54,.18],
-  // Back to top
-  [.52,.17],[.50,.16],[.48,.16],[.46,.17],[.44,.17],[.42,.18]
-];
+/* rotating coordinate readout for flavour */
+if(!reduce){ const clk=document.getElementById('clock');
+  setInterval(()=>{ const la=(50+Math.random()*5.5).toFixed(4), lo=(Math.random()*5).toFixed(4);
+    clk.textContent=la+'° N · '+lo+'° W'; }, 3200); }
 
-// Scotland simplified
-var SCOTLAND = [
-  [.42,.18],[.41,.15],[.40,.12],[.39,.09],[.40,.07],[.42,.05],
-  [.44,.04],[.46,.04],[.48,.05],[.49,.07],[.50,.09],[.50,.12],
-  [.50,.15],[.50,.16],[.48,.16],[.46,.17],[.44,.17],[.42,.18]
-];
-
-// Key cities [x_frac, y_frac, name]
-var CITIES = [
-  [.52,.62,'London'],
-  [.45,.42,'Birmingham'],
-  [.46,.32,'Manchester'],
-  [.47,.28,'Leeds'],
-  [.41,.28,'Liverpool'],
-  [.50,.22,'Newcastle'],
-  [.54,.68,'Brighton'],
-  [.38,.62,'Bristol'],
-  [.35,.65,'Cardiff'],
-  [.56,.52,'Norwich'],
-  [.50,.46,'Leicester'],
-  [.38,.48,'Swansea'],
-  [.57,.40,'Hull'],
-  [.46,.10,'Edinburgh'],
-  [.44,.07,'Glasgow'],
-];
-
-// Alert dots — animated pings
-var DOTS = [
-  {x:.52,.y:.62,r:4,color:'#FF6B6B',delay:0,label:'London'},
-  {x:.45,y:.42,r:3,color:'#FFA94D',delay:.5,label:'Birmingham'},
-  {x:.46,y:.32,r:3.5,color:'#FF6B6B',delay:1,label:'Manchester'},
-  {x:.38,y:.62,r:3,color:'#4A7FD4',delay:1.5,label:'Bristol'},
-  {x:.35,y:.65,r:2.5,color:'#FFA94D',delay:2,label:'Cardiff'},
-  {x:.54,y:.68,r:3,color:'#FF6B6B',delay:2.5,label:'Brighton'},
-  {x:.56,y:.52,r:2.5,color:'#4A7FD4',delay:.8,label:'Norwich'},
-  {x:.50,y:.22,r:2.5,color:'#FFA94D',delay:1.8,label:'Newcastle'},
-  {x:.47,y:.28,r:3,color:'#4A7FD4',delay:.3,label:'Leeds'},
-  {x:.50,y:.46,r:2.5,color:'#FF6B6B',delay:3,label:'Leicester'},
-  {x:.46,y:.10,r:3,color:'#4A7FD4',delay:2.2,label:'Edinburgh'},
-];
-
-// Connection lines between cities
-var CONNECTIONS = [
-  [0,1],[1,2],[2,3],[3,7],[7,4],[0,4],[0,9],[1,9],[2,4],[5,3],[1,6],[8,7]
-];
-
-var t0 = Date.now();
-
-function drawPath(pts, close) {
-  if (!pts.length) return;
-  ctx.beginPath();
-  ctx.moveTo(pts[0][0] * canvas.width, pts[0][1] * canvas.height);
-  for (var i = 1; i < pts.length; i++) {
-    // Smooth curve
-    var p = pts[i];
-    ctx.lineTo(p[0] * canvas.width, p[1] * canvas.height);
-  }
-  if (close) ctx.closePath();
+/* ---- live feed ticker ---- */
+const regions=NODES.filter(n=>n.a).map(n=>n.n);
+const track=document.getElementById('track');
+function feedItem(i){
+  const st=statuses[i%3], reg=regions[i%regions.length];
+  return '<span class="item"><span class="code">'+refFor(i+i*7)+'</span>'
+    +'<span>'+reg+'</span>'
+    +'<span class="chip '+st[0]+'"><span class="cd"></span>'+st[1]+'</span></span>';
 }
+let feed=''; for(let i=0;i<14;i++) feed+=feedItem(i);
+track.innerHTML = reduce ? feed : feed+feed; // duplicate for seamless loop
 
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  var t = (Date.now() - t0) / 1000;
-  var W = canvas.width, H = canvas.height;
-
-  // ── Draw UK outline ──
-  ctx.save();
-  drawPath(UK_POINTS, true);
-  ctx.fillStyle = 'rgba(74,127,212,.06)';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(74,127,212,.35)';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-
-  drawPath(SCOTLAND, true);
-  ctx.fillStyle = 'rgba(74,127,212,.05)';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(74,127,212,.28)';
-  ctx.lineWidth = 1.2;
-  ctx.stroke();
-  ctx.restore();
-
-  // ── Connection lines (pulsing) ──
-  CONNECTIONS.forEach(function(c, i) {
-    var a = DOTS[c[0]], b = DOTS[c[1]];
-    if (!a || !b) return;
-    var pulse = .15 + .08 * Math.sin(t * .8 + i * .7);
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(a.x * W, a.y * H);
-    ctx.lineTo(b.x * W, b.y * H);
-    ctx.strokeStyle = 'rgba(74,127,212,' + pulse + ')';
-    ctx.lineWidth = .8;
-    ctx.setLineDash([4, 8]);
-    ctx.stroke();
-    ctx.restore();
-  });
-
-  // ── Animated data packets along connections ──
-  CONNECTIONS.forEach(function(c, i) {
-    var a = DOTS[c[0]], b = DOTS[c[1]];
-    if (!a || !b) return;
-    var progress = ((t * .3 + i * .25) % 1);
-    var px = (a.x + (b.x - a.x) * progress) * W;
-    var py = (a.y + (b.y - a.y) * progress) * H;
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(px, py, 2, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(111,163,240,.7)';
-    ctx.fill();
-    ctx.restore();
-  });
-
-  // ── Alert dots with ping animation ──
-  DOTS.forEach(function(d, i) {
-    var pingT = ((t - d.delay) % 3) / 3;
-    if (pingT < 0) pingT += 1;
-
-    var cx = d.x * W, cy = d.y * H;
-
-    // Outer ping ring
-    if (pingT < .6) {
-      var ringR = d.r + pingT * 22;
-      var ringA = .5 * (1 - pingT / .6);
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, ringR, 0, Math.PI * 2);
-      ctx.strokeStyle = d.color.replace(')', ',' + ringA + ')').replace('rgb','rgba').replace('#FF6B6B','rgba(255,107,107,').replace('#FFA94D','rgba(255,169,77,').replace('#4A7FD4','rgba(74,127,212,');
-      // simpler:
-      ctx.strokeStyle = 'rgba(255,255,255,' + (ringA * .4) + ')';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    // Second ring
-    if (pingT > .1 && pingT < .7) {
-      var r2 = d.r + (pingT - .1) * 14;
-      var a2 = .4 * (1 - (pingT - .1) / .6);
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, r2, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255,255,255,' + a2 + ')';
-      ctx.lineWidth = .8;
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    // Core dot
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(cx, cy, d.r, 0, Math.PI * 2);
-    ctx.fillStyle = d.color;
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = d.color;
-    ctx.fill();
-    ctx.restore();
-
-    // City label
-    ctx.save();
-    ctx.font = '600 10px Inter, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,.35)';
-    ctx.fillText(d.label, cx + d.r + 5, cy + 4);
-    ctx.restore();
-  });
-
-  requestAnimationFrame(draw);
-}
-
-draw();
+/* ---- form (front-end only) ---- */
+const f=document.getElementById('f'), email=document.getElementById('email'),
+      msg=document.getElementById('msg'), confirm=document.getElementById('confirm');
+f.addEventListener('submit',e=>{
+  e.preventDefault();
+  const v=email.value.trim();
+  const ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  if(!ok){ msg.className='msg err'; msg.textContent='Enter a valid email address.'; email.focus(); return; }
+  msg.textContent=''; f.style.display='none'; confirm.classList.add('show');
+});
 </script>
 </body>
 </html>
